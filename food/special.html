@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="./style/style.css">
+        <style>
+             /*Show data */
+             #show-data {
+                width:90%;
+                height:800px;
+                padding-top:30px;
+                /* border:2px solid black; */
+                margin:auto;
+                display:grid;
+                grid-template-columns: repeat(4, 25%);
+                grid-gap:1%;
+            }
+
+
+
+
+            #image {
+                width:80%;
+            }
+            #pointer {
+                cursor: pointer;
+            }
+            
+        </style>
+    </head>
+    <body>
+        <div id = "show-data">
+           
+        </div>
+    </body>
+</html>
+<script type = "module">
+    import navbar from "./component/navbar.js";
+    let div = document.createElement("div");
+    div.innerHTML = navbar();
+    document.body.prepend(div);
+</script>
+<script>
+    
+    async function show() {
+
+
+       
+
+        let res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=chicken_breast`);
+        let data = await res.json();
+        // console.log(data.meals);
+        appending(data.meals);
+    }
+
+// async function random() {
+//     let res = await fetch(`www.themealdb.com/api/json/v1/1/random.php`);
+//     let data = await res.json();
+//     console.log(data.meals);
+//     appending(data.meals);
+// }
+// random();
+
+function appending(data) {
+var parent = document.getElementById("show-data");
+parent.innerHTML = null;
+data.forEach((el) => {
+    var div = document.createElement("div");
+    div.id = "pointer";
+    div.onclick = function() {
+        localStorage.setItem("meal", JSON.stringify(el));
+        window.location = "show_product.html";
+    }
+
+    var image = document.createElement("img");
+    image.src = el.strMealThumb;
+    image.id = "image"
+    var name = document.createElement("p");
+    name.innerText = "Name : " + el.strMeal;
+    var type = document.createElement("p");
+    type.innerText = "Category: " +  el.strCategory;
+
+    var name_type = document.createElement("div")
+    name_type.append(name);
+    div.append(image, name_type);
+    parent.append(div);
+})
+}
+show();
+</script>

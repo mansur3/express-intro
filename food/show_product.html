@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="./style/style.css">
+        <style>
+            #container {
+                background-repeat: no-repeat;
+                background-size:cover;
+            }
+            #container {
+                width:60%;
+                margin:auto;
+                /* border:2px solid black; */
+                /* height:700px; */
+                display:flex;
+                flex-direction:column;
+            }
+            #header, #saveReceipe {
+                font-size:50px;
+                width:100%;
+                height:80px;
+                color:red;
+                padding:10px;
+                /* background-color:skyblue; */
+            }
+            #choice {
+                font-size:50px;
+                width:100%;
+                height:80px;
+                padding:10px;
+                color:white;
+
+                /* background-color:rgb(102, 118, 124); */
+            }
+            #video {
+                width:80%;
+                height:500px;
+                /* background-color:green; */
+            }
+            
+            #direction {
+                width:100%;
+                font-size:17px;
+                color:blue;
+                /* background-color:blue; */
+                padding:10px;
+                /* height:400px; */
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id = "container">
+            <div id = "header"></div>
+            <div id = "choice"></div>
+            <div id = "video"></div>
+            <div id = "saveReceipe"></div>
+            <div id = "direction"></div>
+        </div>
+    </body>
+</html>
+<script type = "module">
+    import navbar from "./component/navbar.js";
+    let div = document.createElement("div");
+    div.innerHTML = navbar();
+    document.body.prepend(div);
+</script>
+<script>
+    var data = JSON.parse(localStorage.getItem("meal"));
+    function show() {
+        var header = document.getElementById("header");
+        var choice = document.getElementById("choice");
+        var video = document.getElementById("video");
+        var saveReceipe = document.getElementById("saveReceipe");
+        var direction = document.getElementById("direction");
+        header.innerText = "Name: " + data.strMeal;
+        choice.innerText = "Type: " + data.strTags;
+        var frame = document.createElement("iframe");
+        frame.width = "500px";
+        frame.height = "340px";
+        frame.allowFullscreen = true;
+        frame.src = data.strMealThumb;
+        video.append(frame);
+        saveReceipe.innerText = "Instruction";
+        direction.innerText = data.strInstructions;
+        // document.getElementById("container").style.backgroundImage = "url(" + data.strMealThumb + ")";
+    }
+    show();
+</script>

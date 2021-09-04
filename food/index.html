@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="./style/style.css">
+        <style>
+
+
+            /*This is search option*/
+            #search {
+                width:100%;
+                height:50px;
+                /* border:2px solid black; */
+                justify-content: center;
+                display:flex;
+                margin-top:50px;
+
+                flex-direction: row;
+            }
+            #searchItem {
+                width:60%;
+                height:90%;
+                border-radius:30px;
+                font-size:30px;
+
+            }
+            #searchBtn {
+                width:10%;
+                height:90%;
+                border-radius:30px;
+
+
+            }
+
+            #searchBtn:hover {
+                background-color:gray;
+                color:white;
+            }
+
+
+            /*This is bouncing*/
+            #debounce {
+                width: 60%;
+                display:none;
+                clear:both;
+                overflow:auto;
+                color:red;
+                border:2px solid black;
+                background-color:rgb(230, 219, 170);
+
+                /* margin-left: */
+                margin:auto;
+            }
+            #show_bounce_name {
+                font-size:30px;
+                /* background-color:rgb(230, 219, 170); */
+                padding:0px;
+                cursor: pointer;
+                
+            }
+
+            #closeBouncer {
+                display:none;
+            }
+
+
+            /*Show data */
+            #show-data {
+                width:90%;
+                height:800px;
+                padding-top:30px;
+                /* border:2px solid black; */
+                margin:auto;
+                display:grid;
+                grid-template-columns: repeat(4, 25%);
+                grid-gap:1%;
+            }
+
+
+
+
+            #image {
+                width:80%;
+            }
+            #pointer {
+                cursor: pointer;
+            }
+            body {
+                background-image: url("https://cdn.hipwallpaper.com/i/61/85/TbQn2R.gif");
+                background-size:cover;
+                background-repeat: repeat-y;
+            }
+            #debounce {
+                overflow:auto;
+                height:300px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id = "search">
+            <!-- <input  type = "text" oninput = "check()" id = "searchItem" placeholder = "Enter the food name"> -->
+            <input type = "text" oninput = "debounce(check, 100)" id = "searchItem"  placeholder = "Enter the food"/>
+            <button onclick = "show()" id = "searchBtn">Search</button>
+            <button id = "closeBouncer" onclick = "close()">Close</button>
+            <!-- <h2>This is the india</h2> -->
+        </div>
+        <div id = "debounce">
+            
+        </div>
+        <div id = "show-data">
+           
+        </div>
+    </body>
+</html>
+<script type = "module">
+    import navbar from "./component/navbar.js";
+    let div = document.createElement("div");
+    div.innerHTML = navbar();
+    document.body.prepend(div);
+    // document.body.innerHTML = navbar();
+ 
+</script>
+<script>
+
+    async function show() {
+
+
+        document.getElementById("debounce").style.display = "none";
+        document.getElementById("closeBouncer").style.display = "none";
+        
+        
+        let name = document.getElementById("searchItem").value;
+
+        let res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${name}`);
+        let data = await res.json();
+        // console.log(data.meals);
+        appending(data.meals);
+    }
+
+    // async function random() {
+    //     let res = await fetch(`www.themealdb.com/api/json/v1/1/random.php`);
+    //     let data = await res.json();
+    //     console.log(data.meals);
+    //     appending(data.meals);
+    // }
+    // random();
+
+    function appending(data) {
+        var parent = document.getElementById("show-data");
+        parent.innerHTML = null;
+        data.forEach((el) => {
+            var div = document.createElement("div");
+            div.id = "pointer";
+            div.onclick = function() {
+                localStorage.setItem("meal", JSON.stringify(el));
+                window.location = "show_product.html";
+            }
+
+            var image = document.createElement("img");
+            image.src = el.strMealThumb;
+            image.id = "image"
+            var name = document.createElement("p");
+            name.innerText = "Name : " + el.strMeal;
+            var type = document.createElement("p");
+            type.innerText = "Category: " +  el.strCategory;
+
+            var name_type = document.createElement("div")
+            name_type.append(name, type);
+            div.append(image, name_type);
+            parent.append(div);
+        })
+    }
+
+
+
+
+
+      async function check() {
+
+        let name = document.getElementById("searchItem").value;
+        // if(name.length >= 0) {
+            let res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${name}`);
+            let data = await res.json();
+            console.log(data);
+            showBounce(data.meals);
+        
+       
+        }
+
+        var timerId;
+        function showBounce(data) {
+            // if(data.length == 0) {
+            // document.getElementById("debounce").style.display = "none";
+
+            // } else {
+                document.getElementById("closeBouncer").style.display = "block";
+                document.getElementById("closeBouncer").addEventListener("click", function() {
+                      document.getElementById("debounce").style.display = "none";
+                      document.getElementById("closeBouncer").style.display = "none";
+                     
+
+                })
+                var  bounce = document.getElementById("debounce");
+                bounce.style.display = "block";
+                bounce.innerHTML = null;
+                 data.forEach(function(el) {
+                var p = document.createElement("p");
+                p.innerText = el.strMeal;
+                p.id = "show_bounce_name"
+                p.onclick = function() {
+                    window.location = "show_product.html";
+                    localStorage.setItem("meal", JSON.stringify(el));
+                }
+
+                var hr = document.createElement("hr");
+                bounce.append(p, hr);
+            })
+            // }
+            
+            
+
+        }
+
+        function debounce(check, delay) {
+
+
+        if(timerId) {
+            clearTimeout(timerId);
+        }
+
+
+
+
+        timerId =  setTimeout(() => {
+                check();
+            }, delay);
+        }
+
+
+       
+</script>
